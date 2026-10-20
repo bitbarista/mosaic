@@ -1,0 +1,96 @@
+MOSaic -- FPGA replacement for the MOS 6510
+===========================================
+
+This product contains third-party software in synthesized form. The notice
+below is reproduced as its licence requires: "Redistributions in synthesized
+form must reproduce the above copyright notice, this list of conditions and
+the following disclaimer in the documentation and/or other materials provided
+with the distribution."
+
+The configuration flash on every MOSaic board holds a bitstream synthesized
+from the T65 core. This NOTICE must accompany every board that is sold or
+given away, in its documentation or with the product.
+
+
+T65 -- 65xx compatible microprocessor core
+------------------------------------------
+
+Files:    rtl/t65/T65.vhd, rtl/t65/T65_Pack.vhd, rtl/t65/T65_ALU.vhd,
+          rtl/t65/T65_MCode.vhd
+Source:   FPGAARCADE SVN, T65.vhd rev 1347 (2015-05-27, "Ver 313");
+          T65_ALU/MCode/Pack rev 1234 (2015-02-28); original at
+          www.opencores.org. Provenance and file hashes: rtl/t65/SOURCE.md
+
+MODIFIED by this project. Each change is marked "LOCAL PATCH" in the source
+and kept as a patch in patches/ (apply in order, see patches/README.md):
+  * 01: a taken branch reads PC+2, as the NMOS die does (ERRATA E-10); the
+    JAM/KIL opcodes stop the CPU and hold the bus (E-11); ANE ($8B) uses the
+    constant $EF, and $EE when RDY held its operand cycle (E-41); reset
+    decrements S three times, sets I and leaves D unchanged (E-51); a
+    default assignment in T65_ALU.vhd so the ALU synthesizes without a latch
+  * 02: SHA/SHX/SHY/TAS write to the page of the stored value when the index
+    crosses a page (ERRATA E-52)
+  * 03: interrupts are polled on every RDY-held repeat of an instruction's
+    last cycle and in a branch's operand cycle, as the die does (ERRATA
+    E-39); an NMI that hijacks BRK/IRQ keeps its vector when RDY holds
+    the vector read (E-53)
+  * 04: when RDY holds the step before an SHA/SHX/SHY/TAS write, the value
+    is stored without the "and (high byte + 1)" term, as the die does
+    (ERRATA E-54)
+T65_Pack.vhd and T65_MCode.vhd are as received.
+The rest of this product -- including the 6510 wrapper rtl/cpu6510.v and the
+board top rtl/top.v -- is original to this project and is not part of T65.
+Nothing here is endorsed by the T65 authors.
+
+Copyright (c) 2002...2015
+              Daniel Wallner (jesus <at> opencores <dot> org)
+              Mike Johnson   (mikej <at> fpgaarcade <dot> com)
+              Wolfgang Scherr (WoS <at> pin4 <dot> at>
+              Morten Leikvoll ()
+
+All rights reserved
+
+Redistribution and use in source and synthezised forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+
+Redistributions in synthesized form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+
+Neither the name of the author nor the names of other contributors may
+be used to endorse or promote products derived from this software without
+specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+KiCad 3D models
+---------------
+
+Files:    hardware/mosaic.3dshapes/PinHeaderStrip_1x20_P2.54mm_Machined.wrl,
+          hardware/mosaic.3dshapes/TSSOP-20_4.4x5mm_P0.4mm.wrl
+Source:   KiCad 3D model library (https://gitlab.com/kicad/libraries/kicad-packages3D)
+Licence:  CC BY-SA 4.0 with the KiCad libraries exception
+          (https://www.kicad.org/libraries/license/)
+
+
+MOSaic itself
+-------------
+
+Everything else in this repository: (c) 2026 Carl Leach. Hardware design and
+documentation under CC BY-NC-SA 4.0; gateware, firmware, bitstream and tools
+under PolyForm Noncommercial 1.0.0. LICENSE.md maps each folder to its licence;
+the texts are in LICENSES/. Commercial use by arrangement -- see README.

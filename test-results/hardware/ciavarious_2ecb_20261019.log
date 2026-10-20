@@ -1,0 +1,18 @@
+# CIA/ciavarious on $2ECB (IDENT $2ECB before cia1), loaded via runners:run_prg; result read by Carl from the screen (green = pass, red/border red = fail)
+cia1: green (Carl)
+cia2: green (Carl)
+cia3: green (Carl)
+cia3a: green (Carl)
+cia4: green (Carl)
+cia5: green (Carl)
+cia6: green (Carl) -- not in the runner's list, added
+cia7: green (Carl)
+cia8: green (Carl)
+cia9: green (Carl)
+cia10: green (Carl)
+cia11: green (Carl)
+cia12: green (Carl)
+cia13: green (Carl)
+cia14: green (Carl)
+cia15: green, 'ABC' at the bottom (Carl), after ~3.5 min of pale blue screen+border -- a TOD test that waits on the real-time clock; VICE x64sc shows the same (pale blue at 30M cycles, green + ABC at 200M)
+RESULT: 16/16 ciavarious pass on $2ECB (the 15 in the suite + cia6). Expected values are the old-CIA (6526) set; cia3/3a/4/8 old-vs-new tests all green.

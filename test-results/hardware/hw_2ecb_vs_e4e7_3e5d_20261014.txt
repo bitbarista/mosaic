@@ -1,0 +1,20 @@
+VICE testprogs on the real C64, test by test
+  $2ECB (2015 T65 + E-54, slot B)   153/169   hw_2ecb_20261014.json
+  $E4E7 (2015 T65, slot B)          133/169   hw_e4e7_20261013.json
+  $3E5D (golden, slot A)            147/170   hw_3e5d_20261007.json
+
+Fixed by E-54 (fail on $E4E7, pass on $2ECB and golden): 21
+  CPU/sha shaabsy2-5, shazpy2-5; CPU/shs shsabsy2-5; CPU/shxy shx-test, shxy2-5, shyx2-5
+Pass on $2ECB and $E4E7, fail on golden: 7
+  irq-ack-vicii, ackraster, cia-timer-oldcias, Acid800 cpu_timing, nojam, jamirq, jamnmi
+Never run on any build: 15 CIA/ciavarious -- they report by screen colour and never write $D7FF, so
+  run_testprogs skips them (no-exit-write, 0.0 s); they were wrongly counted as failures (corrected 2026-10-19).
+  VICII/lp-trigger/test2new: not in the $2ECB run (new-VIC test, skipped on this old VIC); test2.prg passed.
+  2026-10-19: all 15 (and cia6) run by hand on $2ECB, read off the screen by Carl: 16/16 PASS (ciavarious_2ecb_20261019.log)
+  => $2ECB: 168 of 169 pass; test6b intermittent (1 failure in 96 runs)
+Worse than both: interrupts/irqdma/test6b (error $FF in the suite run)
+  reruns on $2ECB: 5/5 pass (test6b_2ecb_20261014_reruns.log) -> 1 failure in 6 runs, intermittent
+  then x10, x30 and x50 (test6b_2ecb_20261019_x50.log, IDENT $2ECB before and after): 95/95 reruns pass
+  earlier builds: one recorded run each on $E4E7 and golden, both pass
+  x10 + x30 more on $2ECB: 40/40 pass -> 1 failure in 46 runs, none reproduced; not investigated further
+  build check: no IDENT logged around the x10/x30 loops; Carl confirms the C64 stayed on (slot B) until ~06:00 on 2026-10-15, after the last run ended at 03:59

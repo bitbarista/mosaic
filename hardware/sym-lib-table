@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "mosaic")(type "KiCad")(uri "${KIPRJMOD}/mosaic.kicad_sym")(options "")(descr "Project symbols: SN74CB3T3245 octal bus switch, W25Q16JV USON-8 with EP"))
+)

@@ -1,0 +1,4 @@
+# NLP demo on $2ECB (slot B, t65_e54.bin md5 6a16527c, commit c3469fb); IDENT $3E5D -> BOOTB -> IDENT $2ECB just before
+# Carl started it himself from the Ultimate II+ menu (disks from Ultimate storage, not API uploads)
+Carl, 2026-10-15: "demo ran all the way through, disk button works"
+- all 4 disks, no glitches reported; Ultimate II+ disk-swap button switched disks (it had failed with API temp uploads on $E4E7)

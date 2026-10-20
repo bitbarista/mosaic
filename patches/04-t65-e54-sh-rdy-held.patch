@@ -1,0 +1,74 @@
+--- a/rtl/t65/T65.vhd
++++ b/rtl/t65/T65.vhd
+@@ -217,6 +217,10 @@
+   -- LOCAL PATCH (ERRATA E-52): an indexed SHA/SHX/SHY/TAS crossed a page
+   signal SHCross            : std_logic;
+   signal BAH_eff            : std_logic_vector(7 downto 0);
++  signal sh_step_held       : std_logic;  -- E-54: this step has been held by RDY
++  signal sh_drop            : std_logic;  -- E-54: the step just completed was held
++  signal sh_mask            : std_logic_vector(7 downto 0);
++  signal sh_addr            : std_logic_vector(7 downto 0);
+   signal BAAdd              : std_logic_vector(1 downto 0);
+   signal BreakAtNA          : std_logic;
+   signal ADAdd              : std_logic;
+@@ -671,9 +675,16 @@
+   -- the byte they write, not to the carried high byte (perfect6502: 60
+   -- cases, every crossing).  SHCross is set by any carry, but only these
+   -- three write modes look at it.
+-  BAH_eff <= DO when SHCross = '1' and (Write_Data_r = Write_Data_AXB or
++  -- E-54: the page is the MASKED value even when an RDY hold dropped the mask
++  -- from the data (perfect6502).
++  BAH_eff <= sh_addr when SHCross = '1' and (Write_Data_r = Write_Data_AXB or
+                      Write_Data_r = Write_Data_XB or Write_Data_r = Write_Data_YB)
+              else BAH;
++  with Write_Data_r select
++    sh_addr <=
++      ABC(7 downto 0) and X(7 downto 0) and BusB_r(7 downto 0) when Write_Data_AXB,
++      X(7 downto 0) and BusB_r(7 downto 0) when Write_Data_XB,
++      Y(7 downto 0) and BusB_r(7 downto 0) when others;
+ 
+   with Set_Addr_To_r select
+     A_i <=
+@@ -699,6 +710,29 @@
+   -- This is the P that gets pushed on stack with correct B flag. I'm not sure if NMI also clears B, but I guess it does.
+   PwithB<=(P and x"ef") when (IRQCycle='1' or NMICycle='1') else P;
+ 
++  -- LOCAL PATCH (ERRATA E-54): when RDY held the read step just before an
++  -- SHA/SHX/SHY/TAS write, the die stores the register value WITHOUT the
++  -- "and (high byte + 1)" term (perfect6502: only a hold of that one step has
++  -- this effect; a hold of any earlier step does not).
++  sh_mask <= x"FF" when sh_drop = '1' else BusB_r(7 downto 0);
++
++  process (Res_n_i, Clk)
++  begin
++    if Res_n_i = '0' then
++      sh_step_held <= '0';
++      sh_drop <= '0';
++    elsif Clk'event and Clk = '1' then
++      if Enable = '1' then
++        if really_rdy = '1' then
++          sh_drop <= sh_step_held;
++          sh_step_held <= '0';
++        else
++          sh_step_held <= '1';
++        end if;
++      end if;
++    end if;
++  end process;
++
+   with Write_Data_r select
+     DO <=
+       DL                                  when Write_Data_DL,
+@@ -710,9 +744,9 @@
+       std_logic_vector(PC(7 downto 0))    when Write_Data_PCL,
+       std_logic_vector(PC(15 downto 8))   when Write_Data_PCH,
+       ABC(7 downto 0) and X(7 downto 0)   when Write_Data_AX,
+-      ABC(7 downto 0) and X(7 downto 0) and BusB_r(7 downto 0) when Write_Data_AXB, -- no better way found yet...
+-      X(7 downto 0) and BusB_r(7 downto 0) when Write_Data_XB, -- no better way found yet...
+-      Y(7 downto 0) and BusB_r(7 downto 0) when Write_Data_YB, -- no better way found yet...
++      ABC(7 downto 0) and X(7 downto 0) and sh_mask when Write_Data_AXB, -- no better way found yet...
++      X(7 downto 0) and sh_mask when Write_Data_XB, -- no better way found yet...
++      Y(7 downto 0) and sh_mask when Write_Data_YB, -- no better way found yet...
+       (others=>'-')                       when Write_Data_DONTCARE;--Can probably remove this
+ 
+ 

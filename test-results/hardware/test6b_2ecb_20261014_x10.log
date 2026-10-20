@@ -1,0 +1,11 @@
+# slot B $2ECB, test6b x10 (screen captured on failure)
+2ecb run 1/10: pass $0 457.8s
+2ecb run 2/10: pass $0 457.8s
+2ecb run 3/10: pass $0 457.8s
+2ecb run 4/10: pass $0 457.8s
+2ecb run 5/10: pass $0 457.8s
+2ecb run 6/10: pass $0 457.8s
+2ecb run 7/10: pass $0 457.8s
+2ecb run 8/10: pass $0 457.8s
+2ecb run 9/10: pass $0 457.8s
+2ecb run 10/10: pass $0 457.8s

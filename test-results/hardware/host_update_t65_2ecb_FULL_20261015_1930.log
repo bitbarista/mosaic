@@ -1,0 +1,30 @@
+# FULL update (both slots + header) with t65_e54.bin $2ECB md5 6a16527c (commit c3469fb), run from $2ECB (IDENT just before), Carl's go-ahead 2026-10-15. Golden $3E5D (8aa3b0df) no longer in flash; rollback image syn/build/golden_3e5d_8aa3b0df.bin. Cold-boot IDENT pending Carl's power cycle.
+19:30:11 image syn/build/t65/t65_e54.bin 104090 bytes md5 6a16527c77c44bc291d11e6a1fa41198 crc16 $DDF2  mode FULL (both slots + header)
+19:30:15 started
+19:30:15 start chunk at      0: 32768 bytes
+19:30:39 next  chunk at  32768: 32768 bytes
+19:31:03 next  chunk at  65536: 32768 bytes
+19:31:26 next  chunk at  98304: 5804 bytes (last)
+19:32:32 start chunk at      0: 32768 bytes
+19:32:56 next  chunk at  32768: 32768 bytes
+19:33:19 next  chunk at  65536: 32768 bytes
+19:33:43 next  chunk at  98304: 5804 bytes (last)
+19:34:48 RESULT $00 after 274 s
+19:34:48   STEP 1 OF 2 - SPARE SLOT
+19:34:48   ........................................
+19:34:48   ........................................
+19:34:48   .....................
+19:34:48   CHECKING...
+19:34:48   COMMITTING - DO NOT SWITCH OFF
+19:34:48   STEP 2 OF 2 - MAIN SLOT
+19:34:48   ........................................
+19:34:48   ........................................
+19:34:48   ......................
+19:34:48   CHECKING...
+19:34:48   COMMITTING - DO NOT SWITCH OFF
+19:34:48   UPDATE COMPLETE.
+19:34:48   1. TURN THE C64 OFF.
+19:34:48   2. REMOVE THE J4 LINK.
+19:34:48   3. TURN IT BACK ON.
+19:34:48   READY.
+# 19:37 after Carl's power cycle: IDENT RESULT $00 build $2ECB -> cold boot (slot A) is $2ECB

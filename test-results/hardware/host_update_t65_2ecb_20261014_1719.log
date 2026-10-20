@@ -1,0 +1,19 @@
+# slot B <- syn/build/t65/t65_e54.bin, build $2ecb, md5 6a16527c77c44bc291d11e6a1fa41198, commit c3469fb; golden mosaic.bin 8aa3b0df untouched
+17:18:46 image syn/build/t65/t65_e54.bin 104090 bytes md5 6a16527c77c44bc291d11e6a1fa41198 crc16 $DDF2  mode DEV (slot B only)
+17:18:50 started
+17:18:51 start chunk at      0: 32768 bytes
+17:19:15 next  chunk at  32768: 32768 bytes
+17:19:38 next  chunk at  65536: 32768 bytes
+17:20:01 next  chunk at  98304: 5804 bytes (last)
+17:21:07 RESULT $00 after 137 s
+17:21:07   MOSAIC FIRMWARE UPDATE
+17:21:07   DEVELOPMENT: SLOT B ONLY
+17:21:07   SLOT A AND THE BOOT HEADER UNTOUCHED
+17:21:07   ........................................
+17:21:07   ........................................
+17:21:07   .....................
+17:21:07   CHECKING...
+17:21:07   SLOT B WRITTEN AND CHECKED.
+17:21:07   RUN BOOTB TO TRY IT. POWER OFF/ON
+17:21:07   ALWAYS RETURNS TO SLOT A.
+17:21:07   READY.

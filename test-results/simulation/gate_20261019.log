@@ -1,0 +1,49 @@
+  ok    cosim      25 images, 0 divergent
+  ok    opsweep    0 T65 defects
+  ok    flowsweep  83 control-flow cases, 0 divergent
+  ok    irqsweep   338/340 interrupt-timing cases match
+  ok    nmi_model  136/136 scenarios reproduce
+  ok    rdysweep   9680/9680 interrupt x RDY-stall cases match
+  ok    nmi2sweep  276/276 double-NMI cases match
+  ok    shsweep    870/870 SH* x RDY-stall cases match
+  FAIL  mix        exit 1, wanted "2/2 checks passed"
+                                  ~~~^^^^^^^^^^^^
+            File "<repo>/sim/mix/test_trace_save.py", line 36, in run
+              subprocess.run(["acme", "-DDUMPONLY=1", "trace.asm"], cwd=os.path.join(ROOT, "diag"), check=True)
+              ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            File "/usr/lib/python3.14/subprocess.py", line 578, in run
+              raise CalledProcessError(retcode, process.args,
+                                       output=stdout, stderr=stderr)
+          subprocess.CalledProcessError: Command '['acme', '-DDUMPONLY=1', 'trace.asm']' returned non-zero exit status 1.
+  ok    mutate     killed 37/38, 1 equivalent (argued), 0 UNEXPLAINED, 0 stale
+  ok    lorenz     7/7 Lorenz tests PASS
+  ok    board_netlist netlists: 0 difference(s)
+  ok    board_netlist_proof names a reassigned pad
+  ok    board_dynamic WORKS at the socket
+  ok    board_dynamic_proof fails on the E-31 inversion
+  ok    board_realtime WORKS at C64 speed
+  ok    board_realtime_proof both early write starts
+  ok    board_backfeed exactly the ACCEPTED state
+  ok    board_backfeed_proof tracks every enable
+  ok    board_levels 0 interface(s) outside a datasheet limit
+  ok    board_levels_proof a dangling socket pin
+  FAIL  board_ac   exit 1, wanted "MOSaic MEETS every parameter"
+          
+            PHI2 lags PHI0 by 12.8..55.4 ns at the socket (every corner)
+            PHI2 lag, typical board at 48 MHz: 28.1..38.5 ns, mean 33.3 -- a 6510's 30-40 (Bauer)   PASS
+            tDSU/tHR   read data must be stable  34.7 ns before to  -4.7 ns after MOSaic's PHI2 falls (6510: 100 before, 10 after)   PASS
+            tPDSU/tPDH port pins must be stable  34.2 ns before to  -5.0 ns after MOSaic's PHI2 falls (6510: 300 before phi2 rises, 30 after)   PASS
+            read data is taken 4.7..34.7 ns before MOSaic's PHI2 falls at the socket, i.e. -21.9..+50.7 ns about PHI0 falling (a 6510: at its phi2 fall, 30-40 ns after PHI0; before E-47 MOSaic took it ON PHI0's fall)
+          
+            6510 AC table: MOSaic DOES NOT MEET the 6510 AC table
+  ok    board_ac_proof every check fails on its mutant
+  FAIL  board_dc   exit 1, wanted "MOSaic MEETS every parameter"
+            38 RW    output capacitance         <= 12.0 pF  7.5 pF                         PASS
+            40 RES_N VIH: a 6510 high is high   >= 2.0      VT+ max 2.0                    PASS
+            40 RES_N VIL: a 6510 low is low     <= 0.8      VT- min 0.6                    FAIL
+            40 RES_N input leakage              <= 2.5 uA   5 uA                           FAIL
+            40 RES_N input capacitance          <= 10.0 pF  7 pF                           PASS
+          
+            175 checks, 38 FAIL: VIL: a 6510 low is low, capacitance (typ), input leakage, off-state current
+            6510 DC table: MOSaic DOES NOT MEET the 6510 DC table
+  ok    klaus      TRAP at $3469   PASS

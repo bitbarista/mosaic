@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "mosaic")(type "KiCad")(uri "${KIPRJMOD}/mosaic.pretty")(options "")(descr "Project footprints: machined DIP-40 plug headers"))
+)

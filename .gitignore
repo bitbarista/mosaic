@@ -1,0 +1,8 @@
+**/__pycache__/
+updater/out/
+updater/__pycache__/
+syn/build/*.json
+syn/build/*.log
+!updater/out/
+updater/out/*
+!updater/out/MOSAIC.D64

@@ -1,0 +1,6 @@
+# slot B $2ECB, 5 reruns of test6b after its one failure in hw_2ecb_20261014.log
+[  1/1] ok   interrupts/irqdma/test6b.prg                               got pass     want pass    $00 457.8s
+[  1/1] ok   interrupts/irqdma/test6b.prg                               got pass     want pass    $00 457.8s
+[  1/1] ok   interrupts/irqdma/test6b.prg                               got pass     want pass    $00 457.8s
+[  1/1] ok   interrupts/irqdma/test6b.prg                               got pass     want pass    $00 457.8s
+[  1/1] ok   interrupts/irqdma/test6b.prg                               got pass     want pass    $00 457.8s

@@ -1,0 +1,289 @@
+../../rtl/t65/T65.vhd:160:10:warning: no assignment for offsets 8:15 of signal "ABC"
+  signal ABC, X, Y, D       : std_logic_vector(15 downto 0);
+         ^
+../../rtl/t65/T65.vhd:160:15:warning: no assignment for offsets 8:15 of signal "X"
+  signal ABC, X, Y, D       : std_logic_vector(15 downto 0);
+              ^
+../../rtl/t65/T65.vhd:160:18:warning: no assignment for offsets 8:15 of signal "Y"
+  signal ABC, X, Y, D       : std_logic_vector(15 downto 0);
+                 ^
+../../rtl/t65/T65_ALU.vhd:232:54:warning: comparing non-numeric vector is unexpected
+          if (BusA(3 downto 0) and BusB(3 downto 0)) > "0100" then
+                                                     ^
+../../rtl/t65/T65_ALU.vhd:235:54:warning: comparing non-numeric vector is unexpected
+          if (BusA(7 downto 4) and BusB(7 downto 4)) > "0100" then
+                                                     ^
+built tb_wrapper.vvp
+== bus ownership, PHI2 (assertions, mutation-tested) ==
+  AEC: 0 cycle(s) where the FPGA drove D0-D7 with AEC low
+  writes with AEC high: 59, of which driven: 59, NOT driven: 0
+  PHI2: 0 edge(s) not delayed by exactly 2 clocks
+== the wrapper against the die, cycle by cycle (ran at last) ==
+  nops+rmw     140 cycles identical   ok
+  indexed      140 cycles identical   ok
+  branches     140 cycles identical   ok
+  rmw-illegal  140 cycles identical   ok
+
+4/4 wrapper programs identical to the die
+== processor port ==
+test                      expect   got
+  DDR after reset        0x00   0x00   ok
+  port, all inputs       0x17   0x17   ok
+  write DDR = $2F        0x2f   0x2f   ok
+  write port = $37       0x37   0x37   ok
+  output bit reads latch 0x10   0x10   ok
+  turn all to inputs     0x17   0x17   ok
+
+6/6 processor-port behaviours correct
+== P3/P5 idle reads as a real 6510 in a C64, and p3_live (ERRATA E-32) ==
+  p3_live=0  port $00 then input: $01 = $17 (want $17)   ok
+  p3_live=0  port $FF then input: $01 = $DF (want $DF)   ok
+  p3_live=1  port $00 then input: $01 = $1F (want $1F)   ok
+
+all idle-pin reads as a real 6510's
+== port bus rules: $00/$01 writes not driven; E-7 loopback on the port ==
+  A. first write to $0000 (writes $FF): bus carried $5A, want the floating $5A (not driven)   ok
+  A. first write to $0001 (writes $81): bus carried $3C, want the floating $3C (not driven)   ok
+  B. SLO $01 with port $81, A $10: A = $12 (want $12), port = $02 (want $02)   ok
+
+2/2 port bus checks passed
+== rtl/top.v at its pins, 12:1, PHI2_DELAY=0 ==
+  D released out of turn   0 fabric clock(s)            ok
+  PHI2 follows PHI0 within 46 ns 0 mismatch(es)               ok
+  writes reach the pins    4 writes, 0 not on D         ok
+  ordinary write via D     MARK = 119                   ok
+  P pins settle at $3A     P = $3A                      ok
+  port reads back $1A      read $1A                     ok
+
+all top.v pin checks passed
+== reset and port decay ==
+  reset: 3 stack cycle(s) all reads, 0100 -> 01FF -> 01FE then FFFC/FFFD   ok
+  decay: just charged = 0xd7 (expect 0xd7, bits 6/7 hold), after the delay = 0x17 (expect 0x17, decayed to 0)   ok
+
+2/2 checks passed
+== /IRQ taken at the end of phi2, wherever it falls (ERRATA E-37) ==
+  /IRQ in phi2 of cycle 48: clocks 0-5 identical, vector reached, cycle 49 differs   ok
+  /IRQ in phi2 of cycle 49: clocks 0-5 identical, vector reached, cycle 50 the same   ok
+  /IRQ in phi2 of cycle 50: clocks 0-5 identical, vector reached, cycle 51 differs   ok
+  /IRQ in phi2 of cycle 51: clocks 0-5 identical, vector reached, cycle 52 the same   ok
+
+/IRQ counts wherever it falls in phi2
+== port decay: the UNIT, and top.v's elaborated value (ERRATA E-30) ==
+  1. PORT_FALLOFF=200: reads ['0xd7', '0xd7', '0x17'] at +128 / +346 bus cycles -> the count is in BUS cycles   ok
+  2b. top.v elaborates PHI2_DELAY = 0 at 12 MHz (want 0)   ok
+  2. top.v elaborates PORT_FALLOFF = 350000 bus cycles (VICE 6510: 350000; ~355 ms vs ~355 ms at PAL)   ok
+
+2/2 checks passed
+== RDY: halts on reads, ignored during writes (tb_rdy.v, run at last) ==
+  RDY dropped at 30 cycles: 30/30 correct, 7 of them inside a write run (positive control)
+  ok
+== /DMA: AEC taken mid-write, no lead -- the AEC interlock (tb_dma.v) ==
+  /DMA at 40 positions: 40/40 released the bus, 7 caught the CPU mid-write (positive control)
+  ok
+== VIC cycle-stealing ==
+  writes attempted while AEC low: 0  ok
+  undisturbed 35 writes, with badlines 35
+  first 35 writes identical -- cycle-stealing changes timing, not behaviour   ok
+== bus tracer: records the CIA cycles, reads back via $0001 ==
+  mode byte 0 (CIA)                  0                        ok
+  event count (CIA cycles only)      4                        ok
+  event 0: ctrl $40 data $11         ctrl $40 data $11        ok
+  event 1: ctrl $C0 data $11         ctrl $C0 data $11        ok
+  event 2: ctrl $0F data $22         ctrl $0F data $22        ok
+  event 3: ctrl $8D data $00         ctrl $8D data $00        ok
+  stamp spacing = cycles 4, 6, 4     [4, 6, 4]                ok
+  $01 reads the port again after ($10) $10                      ok
+
+tracer records and reads back exactly
+
+== the same, with badlines (+badline) ==
+  mode byte 0 (CIA)                  0                        ok
+  event count (CIA cycles only)      4                        ok
+  event 0: ctrl $40 data $11         ctrl $40 data $11        ok
+  event 1: ctrl $C0 data $11         ctrl $C0 data $11        ok
+  event 2: ctrl $0F data $22         ctrl $0F data $22        ok
+  event 3: ctrl $8D data $00         ctrl $8D data $00        ok
+  stamp spacing >= cycles 4, 6, 4    [4, 49, 4]               ok
+  $01 reads the port again after ($10) $10                      ok
+
+tracer records and reads back exactly
+  16 dumps under badlines identical       ok   1 distinct, 304 bytes
+== bus tracer, ALL mode: the ring, frozen by a stray CIA2 access ==
+  mode byte 1 (ALL)                            ok   1
+  the trigger read of $DD05 is in the ring     ok   entry 16
+  count = trigger entry + 1 + 512              ok   529
+  LDA $DD05: AD (sync), 05, DD, read $DD05     ok   0831:AD/F0 0832:05/B0 0833:DD/B0 DD05:00/B0
+  the four NOPs, opcode fetches flagged SYNC   ok   4
+  every entry AEC and RDY set                  ok   0 not
+  opcode fetched at $2000 freezes the ring     ok   entry 16, count 529
+
+tracer ALL mode records and freezes exactly
+== bus tracer, BOOT mode: arms itself at reset, freezes on BRK ==
+  mode byte 3 (BOOT: armed itself at reset)    ok   3
+  BRK fetch in the ring, flagged SYNC          ok   entry 22
+  count = BRK entry + 1 + 512                  ok   535
+
+tracer BOOT mode arms itself and freezes on BRK
+== bus tracer, MENU mode: frozen only by the bus being taken (the menu) ==
+  PAGE: mode byte 13                                 ok   13
+  PAGE: the stray write to $4012 is in the ring, after the arming one ok   arm 53, stray 59
+  PAGE: the wrong-address and wrong-value writes are there and did not trigger ok   entry 35
+  PAGE: frozen 8192 after it (count = entry + 1 + 8192) ok   count 8252
+  PAGE-PC ($CF): mode byte 13                        ok   13
+  PAGE-PC: a fetch at $3020 BEFORE the arm, then the arm, then a write, then the fetch ok   fetches [11, 35], arm 22, write 28
+  PAGE-PC: frozen 512 after the second fetch (count = entry + 1 + 512) ok   count 548
+  RESUME ($0F): mode byte 17                         ok   17
+  RESUME: ran through the hold, ring full (not frozen at the steal) ok   count 16384
+  RESUME: froze ~15,000 after the release (oldest entries are inside the hold) ok   AEC of the oldest: [0, 0, 0, 0, 0, 0]
+  JAM: mode byte 5                                   ok   5
+  JAM: the JAM opcode fetch is in the ring           ok   at 083E
+  JAM: the ring ends within 8 cycles of it (frozen by the jam, not by the reset 500 cycles later) ok   8 after
+  JAM: what follows it is the jammed bus ($FFFE/$FFFF, E-11) ok   
+  mode byte 5 (MENU)                                 ok   5
+  LDA $DD05 in the ring and did not freeze it        ok   entry 12, count 2488
+  BRK in the ring and did not freeze it              ok   entry 13, count 2488
+  froze at the steal (count well past the loop start, < the ring) ok   2488
+
+tracer MENU/PAGE modes: PAGE freezes after a write into its page; MENU ignores CIA2 and BRK, freezes on a JAM and on the long steal
+== the flash port (D-7): J4 + key -> /CS; spi.asm's routines vs a W25Q16 model ==
+  ok   key: spi.asm == the RTL's LFSR (seed $3C, 16 bytes, taps [7, 5, 4, 3])
+  ok   address: FLPORT == FL_ADDR ($CE00)
+  ok   address differs from DRAMa's ($CE00 vs $CF00)
+  ok   key windows disjoint from DRAMa seed $A5 (225 steps apart)
+  ok   key windows disjoint from DRAMa seed $4B (98 steps apart)
+  ok   CRC16: flash.asm polynomial is $1021 (eor #$['21', '10'])
+  ok   CRC16: mkfirmware over $00..$FF is $3FBD (the sibling's measured 6502 value) ($3FBD)
+check_key: PASS
+  1. J4 fitted, the right key
+    ok   finished (reached done)  $060F=A5
+    ok   before the key: no JEDEC answer  00 00 00
+    ok   after key + wake: JEDEC EF 40 15  EF 40 15
+    ok   flash_check passes (WEL 0->1->0)  carry=0
+    ok   4K erase polled to completion  carry=0 polls=6
+    ok   page program polled to completion  carry=0
+    ok   after the lock: no JEDEC answer  00 00 00
+    ok   the model holds the page  
+    ok   the CPU read it back identical  
+    ok   one erase, one program, no protocol error  {'se': '1', 'pp': '1', 'errs': '0', 'ignored': '1'}
+    ok   P4 held low by the link, never driven against it  p4=0
+    ok   unlocked: $CE00/$CE01 read the BUILD ID  $BE5A
+    ok   locked: $CE00/$CE01 are RAM again  [128, 119]
+    ok   the warm-boot request reached SB_WARMBOOT, image 1  ['WARMBOOT S1S0=01']
+  2. no J4
+    ok   /CS never fell  cs_low_cycles=0
+    ok   no warm boot  
+    ok   no build ID visible  
+    ok   nothing erased or written  
+    ok   flash_check failed  
+  3. J4, one key byte wrong
+    ok   /CS never fell  cs_low_cycles=0
+    ok   no warm boot  
+    ok   no build ID visible  
+  4. J4, DRAMa's key at DRAMa's address
+    ok   /CS never fell  cs_low_cycles=0
+    ok   no warm boot  
+    ok   no build ID visible  
+  4b. J4, OUR key at DRAMa's address
+    ok   /CS never fell  cs_low_cycles=0
+    ok   no warm boot  
+    ok   no build ID visible  
+  5. no J4; the program drives P4 low itself
+    ok   /CS never fell  cs_low_cycles=0
+    ok   no warm boot  
+    ok   no build ID visible  
+  6. J4 removed in the middle of the page program, then re-fitted
+    ok   /CS high from the removal on, link re-fitted or not  cs_after_off=0
+    ok   no warm boot after the removal  
+    ok   and the lock held: no JEDEC answer after it  [0, 0, 0]
+test_flashport: PASS
+== the updater, unmodified, end to end on the RTL: good file, and every refusal ==
+  A  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / CHECKING... / COMMITTING - DO NOT SWITCH OFF / STEP 2 OF 2 - MAIN SLOT / . / CHECKING... / COMMITT
+    ok   no SPI protocol error  errs=0
+  B  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / BAD CHECKSUM - NOT COMMITTED / STOPPED. BOARD IS UNCHANGED.
+    ok   no SPI protocol error  errs=0
+  C  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / NOT A MOSAIC FIRMWARE FILE / STOPPED. BOARD IS UNCHANGED.
+    ok   no SPI protocol error  errs=0
+  D  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / FIRMWARE IS FOR A DIFFERENT BOARD / STOPPED. BOARD IS UNCHANGED.
+    ok   no SPI protocol error  errs=0
+  E  MOSAIC FIRMWARE UPDATE / J4 IS NOT FITTED. / TURN THE C64 OFF, FIT THE J4 LINK, / TURN IT ON AND RUN THIS AGAIN. / NOTHING HAS BEEN CHANGED.
+  F  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / CHECKING... / FLASH DOES NOT MATCH THE FILE / STOPPED. BOARD IS UNCHANGED.
+    ok   no SPI protocol error  errs=0
+  G  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / DISK ERROR - NOT PROGRAMMED / STOPPED. BOARD IS UNCHANGED.
+    ok   no SPI protocol error  errs=0
+  H  MOSAIC FIRMWARE UPDATE / DEVELOPMENT: SLOT B ONLY / SLOT A AND THE BOOT HEADER UNTOUCHED / CHECKING... / SLOT B WRITTEN AND CHECKED. / RUN BOOTB TO TR
+    ok   no SPI protocol error  errs=0
+  HA  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / CHECKING... / COMMITTING - DO NOT SWITCH OFF / STEP 2 OF 2 - MAIN SLOT / . / CHECKING... / COMMITT
+    ok   no SPI protocol error  errs=0
+  HB  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / BAD CHECKSUM - NOT COMMITTED / STOPPED. BOARD IS UNCHANGED.
+    ok   no SPI protocol error  errs=0
+  HG  MOSAIC FIRMWARE UPDATE / STEP 1 OF 2 - SPARE SLOT / DISK ERROR - NOT PROGRAMMED / STOPPED. BOARD IS UNCHANGED.
+    ok   no SPI protocol error  errs=0
+  HH  MOSAIC FIRMWARE UPDATE / DEVELOPMENT: SLOT B ONLY / SLOT A AND THE BOOT HEADER UNTOUCHED / CHECKING... / SLOT B WRITTEN AND CHECKED. / RUN BOOTB TO TR
+    ok   no SPI protocol error  errs=0
+  A  checks
+    ok   UPDATE COMPLETE  
+    ok   header -> slot A, as built by mkfirmware  
+    ok   header alone in sector 0 (rest erased)  
+    ok   slot A holds the image  
+    ok   slot B holds the image  
+    ok   4 block erases, 2 sector erases  be=4 se=2
+  B  checks
+    ok   says BAD CHECKSUM  
+    ok   the boot header (old image) untouched  
+  C  checks
+    ok   says NOT A MOSAIC FIRMWARE FILE  
+    ok   the boot header (old image) untouched  
+  D  checks
+    ok   says FOR A DIFFERENT BOARD  
+    ok   the boot header (old image) untouched  
+  F  checks
+    ok   says DOES NOT MATCH  
+    ok   the boot header (old image) untouched  
+  G  checks
+    ok   says DISK ERROR  
+    ok   the boot header (old image) untouched  
+    ok   C: nothing erased at all  
+    ok   D: nothing erased at all  
+    ok   F: and BOARD IS UNCHANGED  
+  H  checks (DEVUPDATE)
+    ok   says SLOT B WRITTEN AND CHECKED  
+    ok   slot B holds the image  
+    ok   slot A untouched (still erased)  
+    ok   the boot header and old image byte-identical  
+    ok   2 block erases, no sector erase  be=2 se=0
+    ok   RESULT $02F0 = 00  [0]
+  HA checks (HOST, good file, 3 chunks)
+    ok   UPDATE COMPLETE  
+    ok   header -> slot A  
+    ok   header alone in sector 0  
+    ok   slot A holds the image  
+    ok   slot B holds the image  
+    ok   4 block erases, 2 sector erases  be=4 se=2
+  HB checks (HOST)
+    ok   says BAD CHECKSUM  
+    ok   the boot header (old image) untouched  
+  HG checks (HOST)
+    ok   says DISK ERROR  
+    ok   the boot header (old image) untouched  
+  HH checks (HOST DEVUPDATE)
+    ok   says SLOT B WRITTEN AND CHECKED  
+    ok   slot B holds the image  
+    ok   slot A untouched  
+    ok   the boot header and old image byte-identical  
+    ok   RESULT $02F0 = 00  [0]
+    ok   HA: the disk device never touched  
+    ok   HB: the disk device never touched  
+    ok   HG: the disk device never touched  
+    ok   HH: the disk device never touched  
+  E  checks
+    ok   says J4 IS NOT FITTED  
+    ok   /CS never fell  
+test_updater: PASS
+== diag/tracedump.prg saves the trace through the Command Interface ==
+  command sequence CD /Usb0, OPEN, WRITE.., CLOSE  ok   CD OPEN WRITE WRITE WRITE CLOSE
+  OPEN mode $0A, name MOSTRACE.BIN                 ok   0a4d4f5354524143452e42494e
+  header MOSTRACE, dump-only flag                  ok   4d4f53545241434501
+  count 3, events = the prologue's                 ok   count 3, 320040113600c0113a008d00
+  200 events, 128 + 72 per write, all saved        ok   count 200, 800 bytes, writes 4
+
+tracedump.prg saves the trace exactly

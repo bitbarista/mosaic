@@ -1,0 +1,7 @@
+18:03:58 mount: {    "Subsys" : 2,   "Ftype" : 1541,   "command" : 38176,   "file" : "/Temp/cache/upload/temp0001",   "errors" : [  ] }
+18:03:58 drives:  "/Temp/cache/upload/temp0001"
+18:04:02 UPDATE started
+18:05:02 RESULT $AA  last lines: MOSAIC FIRMWARE UPDATE | STEP 1 OF 2 - SPARE SLOT
+18:06:02 RESULT $AA  last lines: MOSAIC FIRMWARE UPDATE | STEP 1 OF 2 - SPARE SLOT
+18:07:02 RESULT $AA  last lines: MOSAIC FIRMWARE UPDATE | STEP 1 OF 2 - SPARE SLOT
+18:08:02 RESULT $AA  last lines: MOSAIC FIRMWARE UPDATE | STEP 1 OF 2 - SPARE SLOT

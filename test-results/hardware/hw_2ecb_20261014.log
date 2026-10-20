@@ -1,0 +1,189 @@
+# slot B $2ECB (t65_e54.bin md5 6a16527c, commit c3469fb), IDENT $2ECB; Ultimate II+ 192.168.8.110, stock KERNAL; full suite, same settings as hw_e4e7_20261013
+169 tests on the real C64 (192.168.8.110)
+[  1/169] ok   interrupts/branchquirk/branchquirk-old.prg                 got pass     want pass    $00  16.7s
+[  2/169] ok   interrupts/branchquirk/branchquirk-nmiold.prg              got pass     want pass    $00  16.4s
+[  3/169] ok   interrupts/cia-int/cia-int-irq.prg                         got pass     want pass    $00  11.2s
+[  4/169] ok   interrupts/cia-int/cia-int-nmi.prg                         got pass     want pass    $00  11.2s
+[  5/169] ok   interrupts/irq-ackn-bug/cia1.prg                           got pass     want pass    $00  11.3s
+[  6/169] ok   interrupts/irq-ackn-bug/cia2.prg                           got pass     want pass    $00  11.3s
+[  7/169] ok   interrupts/irq-ackn-bug/irq-ack-vicii.prg                  got pass     want pass    $00  11.3s
+[  8/169] ok   interrupts/irqdma/nmitest6b.prg                            got pass     want pass    $00 457.8s
+[  9/169] ok   interrupts/irqdma/nmitest6.prg                             got pass     want pass    $00 457.8s
+[ 10/169] ok   interrupts/irqdma/test1b.prg                               got pass     want pass    $00 457.8s
+[ 11/169] ok   interrupts/irqdma/test1.prg                                got pass     want pass    $00 457.8s
+[ 12/169] ok   interrupts/irqdma/test2b.prg                               got pass     want pass    $00 457.8s
+[ 13/169] ok   interrupts/irqdma/test2.prg                                got pass     want pass    $00 675.2s
+[ 14/169] ok   interrupts/irqdma/test3b.prg                               got pass     want pass    $00 1878.5s
+[ 15/169] ok   interrupts/irqdma/test3.prg                                got pass     want pass    $00 457.8s
+[ 16/169] ok   interrupts/irqdma/test4b.prg                               got pass     want pass    $00 457.8s
+[ 17/169] ok   interrupts/irqdma/test4.prg                                got pass     want pass    $00 457.8s
+[ 18/169] ok   interrupts/irqdma/test5b.prg                               got pass     want pass    $00 457.8s
+[ 19/169] ok   interrupts/irqdma/test5.prg                                got pass     want pass    $00 457.8s
+[ 20/169] FAIL interrupts/irqdma/test6b.prg                               got error    want pass    $FF 457.8s
+[ 21/169] ok   interrupts/irqdma/test6.prg                                got pass     want pass    $00 457.8s
+[ 22/169] ok   interrupts/irqdma/test7b.prg                               got pass     want pass    $00 457.8s
+[ 23/169] ok   interrupts/irqdma/test7.prg                                got pass     want pass    $00 457.8s
+[ 24/169] ok   interrupts/irqdummy/irqdummy.prg                           got pass     want pass    $00  10.2s
+[ 25/169] ok   interrupts/irqnmi/irqnmi-old.prg                           got pass     want pass    $00  21.4s
+[ 26/169] ok   interrupts/irqnoack/ackcia.prg                             got pass     want pass    $00   8.2s
+[ 27/169] ok   interrupts/irqnoack/ackcia2.prg                            got pass     want pass    $00   8.2s
+[ 28/169] ok   interrupts/irqnoack/ackcia3.prg                            got pass     want pass    $00   8.2s
+[ 29/169] ok   interrupts/irqnoack/ackraster.prg                          got timeout  want timeout $AA   8.3s
+[ 30/169] ok   CIA/CIA-AcountsB/cia-b-counts-a.prg                        got pass     want pass    $00 102.6s
+[ 31/169] ok   CIA/CIA-AcountsB/cmp-b-counts-a-old.prg                    got pass     want pass    $00 102.6s
+[ 32/169] ok   CIA/cia-timer/cia-timer-oldcias.prg                        got pass     want pass    $00 204.1s
+[ 33/169] FAIL CIA/ciavarious/cia1.prg                                    got no-exit-write want pass    -   0.0s
+[ 34/169] FAIL CIA/ciavarious/cia2.prg                                    got no-exit-write want pass    -   0.0s
+[ 35/169] FAIL CIA/ciavarious/cia3.prg                                    got no-exit-write want pass    -   0.0s
+[ 36/169] FAIL CIA/ciavarious/cia3a.prg                                   got no-exit-write want pass    -   0.0s
+[ 37/169] FAIL CIA/ciavarious/cia4.prg                                    got no-exit-write want pass    -   0.0s
+[ 38/169] FAIL CIA/ciavarious/cia5.prg                                    got no-exit-write want pass    -   0.0s
+[ 39/169] ok   CIA/ciavarious/cia6.prg                                    got pass     want pass    $00  21.3s
+[ 40/169] FAIL CIA/ciavarious/cia7.prg                                    got no-exit-write want pass    -   0.0s
+[ 41/169] FAIL CIA/ciavarious/cia8.prg                                    got no-exit-write want pass    -   0.0s
+[ 42/169] FAIL CIA/ciavarious/cia9.prg                                    got no-exit-write want pass    -   0.0s
+[ 43/169] FAIL CIA/ciavarious/cia10.prg                                   got no-exit-write want pass    -   0.0s
+[ 44/169] FAIL CIA/ciavarious/cia11.prg                                   got no-exit-write want pass    -   0.0s
+[ 45/169] FAIL CIA/ciavarious/cia12.prg                                   got no-exit-write want pass    -   0.0s
+[ 46/169] FAIL CIA/ciavarious/cia13.prg                                   got no-exit-write want pass    -   0.0s
+[ 47/169] FAIL CIA/ciavarious/cia14.prg                                   got no-exit-write want pass    -   0.0s
+[ 48/169] FAIL CIA/ciavarious/cia15.prg                                   got no-exit-write want pass    -   0.0s
+[ 49/169] ok   CIA/dd0drw/dd0drw.prg                                      got pass     want pass    $00   7.4s
+[ 50/169] ok   CIA/dd0dtest/dd0dtest.prg                                  got pass     want pass    $00 102.6s
+[ 51/169] ok   CIA/mirrors/ciamirrors.prg                                 got pass     want pass    $00  10.2s
+[ 52/169] ok   CIA/irqdelay/irqdelay.prg                                  got pass     want pass    $00   8.2s
+[ 53/169] ok   CIA/irqdelay/irqdelay-oneshot.prg                          got pass     want pass    $00   8.3s
+[ 54/169] ok   CIA/irqdelay/irqdelay2.prg                                 got pass     want pass    $00  10.2s
+[ 55/169] ok   CIA/irqdelay/irqdelay-cia1-4-old.prg                       got pass     want pass    $00  11.2s
+[ 56/169] ok   CIA/irqdelay/irqdelay-cia1-oneshot-4-old.prg               got pass     want pass    $00  11.2s
+[ 57/169] ok   CIA/irqdelay/irqdelay-cia1-oneshot.prg                     got pass     want pass    $00  11.3s
+[ 58/169] ok   CIA/irqdelay/irqdelay-cia1.prg                             got pass     want pass    $00  11.3s
+[ 59/169] ok   CIA/irqdelay/irqdelay-cia2-4.prg                           got pass     want pass    $00  11.3s
+[ 60/169] ok   CIA/irqdelay/irqdelay-cia2-oneshot-4.prg                   got pass     want pass    $00  11.3s
+[ 61/169] ok   CIA/irqdelay/irqdelay-cia2-oneshot.prg                     got pass     want pass    $00  11.2s
+[ 62/169] ok   CIA/irqdelay/irqdelay-cia2.prg                             got pass     want pass    $00  11.2s
+[ 63/169] ok   CIA/pb6pb7/main.prg                                        got pass     want pass    $00   8.2s
+[ 64/169] ok   CIA/reload0/reload0a.prg                                   got pass     want pass    $00  21.5s
+[ 65/169] ok   CIA/reload0/reload0b.prg                                   got pass     want pass    $00  22.7s
+[ 66/169] ok   CIA/timerbasics/test.prg                                   got pass     want pass    $00 102.6s
+[ 67/169] ok   CIA/timerbasics/timer.prg                                  got pass     want pass    $00 102.6s
+[ 68/169] ok   CIA/timerbasics/timer_test1.prg                            got pass     want pass    $00 102.6s
+[ 69/169] ok   VICII/colorram/test.prg                                    got pass     want pass    $00 102.5s
+[ 70/169] ok   VICII/lplatency/lplatency.prg                              got pass     want pass    $00  11.2s
+[ 71/169] ok   VICII/lp-trigger/test2.prg                                 got pass     want pass    $00  21.4s
+[ 72/169] ok   VICII/phi1timing/phi1timing.prg                            got pass     want pass    $00  11.3s
+[ 73/169] ok   VICII/split-tests/bascan/bascan.prg                        got pass     want pass    $00 102.6s
+[ 74/169] ok   VICII/split-tests/lightpen/lightpen.prg                    got pass     want pass    $00 480.1s
+[ 75/169] ok   VICII/split-tests/spritescan/spritescan.prg                got pass     want pass    $00 480.1s
+[ 76/169] ok   VICII/vspbug/vsp_bug.prg                                   got pass     want pass    $00  14.3s
+[ 77/169] ok   VICII/vsp-tester/vsp-tester.prg                            got pass     want pass    $00  16.4s
+[ 78/169] ok   VICII/spritecollisions/sprite-gfx-collision-cycle.prg      got pass     want pass    $00  11.2s
+[ 79/169] ok   VICII/spritecollisions/sprite-sprite-collision-cycle.prg   got pass     want pass    $00  11.2s
+[ 80/169] ok   VICII/spritecollisions/sprite-sprite.prg                   got pass     want pass    $00  11.2s
+[ 81/169] ok   VICII/spritecollisions/sprite-sprite-hi-hi.prg             got pass     want pass    $00  11.2s
+[ 82/169] ok   VICII/spritecollisions/sprite-sprite-mc-hi.prg             got pass     want pass    $00  11.2s
+[ 83/169] ok   VICII/spritecollisions/sprite-sprite-hi-mc.prg             got pass     want pass    $00  11.2s
+[ 84/169] ok   VICII/spritecollisions/sprite-sprite-mc-mc.prg             got pass     want pass    $00  11.2s
+[ 85/169] ok   VICII/spritecollisions/sprite-gfx-hi-hi.prg                got pass     want pass    $00  11.2s
+[ 86/169] ok   VICII/spritecollisions/sprite-gfx-mc-hi.prg                got pass     want pass    $00  11.2s
+[ 87/169] ok   VICII/spritecollisions/sprite-gfx-hi-mc.prg                got pass     want pass    $00  11.2s
+[ 88/169] ok   VICII/spritecollisions/sprite-gfx-mc-mc.prg                got pass     want pass    $00  11.2s
+[ 89/169] ok   VICII/spritecollclear/bug2135.prg                          got pass     want pass    $00  11.2s
+[ 90/169] ok   VICII/spritegap/spritegap2.prg                             got pass     want pass    $00 480.1s
+[ 91/169] ok   VICII/spritegap/spritegap3.prg                             got pass     want pass    $00 480.1s
+[ 92/169] ok   VICII/spriterestart/spriterestart.prg                      got pass     want pass    $00  10.2s
+[ 93/169] ok   VICII/spritesteal/spritesteal.prg                          got pass     want pass    $00 102.6s
+[ 94/169] ok   VICII/spritevssprite/spritevssprite.prg                    got pass     want pass    $00  33.6s
+[ 95/169] ok   VICII/spritex/demusinterruptus.prg                         got pass     want pass    $00   7.8s
+[ 96/169] ok   VICII/spritex/testsuite.prg                                got pass     want pass    $00  11.3s
+[ 97/169] ok   VICII/spritey/spritey.prg                                  got pass     want pass    $00 102.6s
+[ 98/169] ok   CPU/64doc/dadc.prg                                         got pass     want pass    $00  30.6s
+[ 99/169] ok   CPU/64doc/dincsbc-deccmp.prg                               got pass     want pass    $00  27.5s
+[100/169] ok   CPU/64doc/dincsbc.prg                                      got pass     want pass    $00  27.5s
+[101/169] ok   CPU/64doc/droradc.prg                                      got pass     want pass    $00  31.6s
+[102/169] ok   CPU/64doc/dsbc-cmp-flags.prg                               got pass     want pass    $00  23.4s
+[103/169] ok   CPU/64doc/dsbc.prg                                         got pass     want pass    $00  27.5s
+[104/169] ok   CPU/64doc/sbx-c100.prg                                     got pass     want pass    $00  15.4s
+[105/169] ok   CPU/Acid800/cpu_decimal.prg                                got pass     want pass    $00  23.4s
+[106/169] ok   CPU/Acid800/cpu_flags.prg                                  got pass     want pass    $00  23.4s
+[107/169] ok   CPU/Acid800/cpu_illegal.prg                                got pass     want pass    $00  42.7s
+[108/169] ok   CPU/Acid800/cpu_insn.prg                                   got pass     want pass    $00  36.7s
+[109/169] ok   CPU/Acid800/cpu_timing.prg                                 got pass     want pass    $00  23.4s
+[110/169] ok   CPU/Acid800/cpu_bugs.prg                                   got pass     want pass    $00  26.5s
+[111/169] ok   CPU/Acid800/cpu_clisei.prg                                 got pass     want pass    $00  24.5s
+[112/169] ok   CPU/ane/ane.prg                                            got pass     want pass    $00  72.2s
+[113/169] ok   CPU/ane/ane-none.prg                                       got pass     want pass    $00  72.1s
+[114/169] ok   CPU/ane/ane-border.prg                                     got pass     want pass    $00  72.2s
+[115/169] ok   CPU/asap/cpu_ane.prg                                       got pass     want pass    $00  19.4s
+[116/169] ok   CPU/asap/cpu_anx.prg                                       got pass     want pass    $00  19.4s
+[117/169] ok   CPU/asap/cpu_decimal.prg                                   got pass     want pass    $00 163.5s
+[118/169] ok   CPU/asap/cpu_las.prg                                       got pass     want pass    $00  11.3s
+[119/169] ok   CPU/asap/cpu_shx.prg                                       got pass     want pass    $00  41.8s
+[120/169] ok   CPU/bclark/decimalmode.prg                                 got pass     want pass    $00  67.1s
+[121/169] ok   CPU/cpujam/cpujam02.prg                                    got timeout  want timeout $AA   6.7s
+[122/169] ok   CPU/cpujam/cpujam12.prg                                    got timeout  want timeout $AA   6.8s
+[123/169] ok   CPU/cpujam/cpujam22.prg                                    got timeout  want timeout $AA   6.8s
+[124/169] ok   CPU/cpujam/cpujam32.prg                                    got timeout  want timeout $AA   6.7s
+[125/169] ok   CPU/cpujam/cpujam42.prg                                    got timeout  want timeout $AA   6.8s
+[126/169] ok   CPU/cpujam/cpujam52.prg                                    got timeout  want timeout $AA   6.7s
+[127/169] ok   CPU/cpujam/cpujam62.prg                                    got timeout  want timeout $AA   6.7s
+[128/169] ok   CPU/cpujam/cpujam72.prg                                    got timeout  want timeout $AA   6.7s
+[129/169] ok   CPU/cpujam/cpujam92.prg                                    got timeout  want timeout $AA   6.8s
+[130/169] ok   CPU/cpujam/cpujamb2.prg                                    got timeout  want timeout $AA   6.7s
+[131/169] ok   CPU/cpujam/cpujamd2.prg                                    got timeout  want timeout $AA   6.7s
+[132/169] ok   CPU/cpujam/cpujamf2.prg                                    got timeout  want timeout $AA   6.7s
+[133/169] ok   CPU/cpujam/nojam.prg                                       got timeout  want timeout $00   6.7s
+[134/169] ok   CPU/cpujam/jamirq.prg                                      got timeout  want timeout $00   6.8s
+[135/169] ok   CPU/cpujam/jamnmi.prg                                      got timeout  want timeout $00   6.8s
+[136/169] ok   CPU/cpujam/unjam.prg                                       got timeout  want timeout $AA   6.7s
+[137/169] ok   CPU/cpuport/test1.prg                                      got pass     want pass    $00   6.9s
+[138/169] ok   CPU/hmc6502/AllSuiteA.prg                                  got pass     want pass    $00  46.8s
+[139/169] ok   CPU/kdormann/6502_functional_test.prg                      got pass     want pass    $00 183.8s
+[140/169] ok   CPU/lax/lax.prg                                            got pass     want pass    $00  72.1s
+[141/169] ok   CPU/lax/lax-none.prg                                       got pass     want pass    $00  72.2s
+[142/169] ok   CPU/lax/lax-border.prg                                     got pass     want pass    $00  72.2s
+[143/169] ok   CPU/sha/shaabsy1.prg                                       got pass     want pass    $00   7.2s
+[144/169] ok   CPU/sha/shaabsy2.prg                                       got pass     want pass    $00   8.3s
+[145/169] ok   CPU/sha/shaabsy3.prg                                       got pass     want pass    $00  19.4s
+[146/169] ok   CPU/sha/shaabsy4.prg                                       got pass     want pass    $00   8.2s
+[147/169] ok   CPU/sha/shaabsy5.prg                                       got pass     want pass    $00   8.2s
+[148/169] ok   CPU/sha/shazpy1.prg                                        got pass     want pass    $00   6.8s
+[149/169] ok   CPU/sha/shazpy2.prg                                        got pass     want pass    $00   7.9s
+[150/169] ok   CPU/sha/shazpy3.prg                                        got pass     want pass    $00  21.4s
+[151/169] ok   CPU/sha/shazpy4.prg                                        got pass     want pass    $00   8.2s
+[152/169] ok   CPU/sha/shazpy5.prg                                        got pass     want pass    $00   8.3s
+[153/169] ok   CPU/shs/shsabsy1.prg                                       got pass     want pass    $00   6.7s
+[154/169] ok   CPU/shs/shsabsy2.prg                                       got pass     want pass    $00   8.2s
+[155/169] ok   CPU/shs/shsabsy3.prg                                       got pass     want pass    $00  21.4s
+[156/169] ok   CPU/shs/shsabsy4.prg                                       got pass     want pass    $00   8.5s
+[157/169] ok   CPU/shs/shsabsy5.prg                                       got pass     want pass    $00   8.5s
+[158/169] ok   CPU/shxy/shx-test.prg                                      got pass     want pass    $00 173.6s
+[159/169] ok   CPU/shxy/shxy1.prg                                         got pass     want pass    $00   9.2s
+[160/169] ok   CPU/shxy/shxy2.prg                                         got pass     want pass    $00  21.4s
+[161/169] ok   CPU/shxy/shxy3.prg                                         got pass     want pass    $00  21.4s
+[162/169] ok   CPU/shxy/shxy4.prg                                         got pass     want pass    $00  21.4s
+[163/169] ok   CPU/shxy/shxy5.prg                                         got pass     want pass    $00   8.3s
+[164/169] ok   CPU/shxy/shyx1.prg                                         got pass     want pass    $00  10.2s
+[165/169] ok   CPU/shxy/shyx2.prg                                         got pass     want pass    $00  21.4s
+[166/169] ok   CPU/shxy/shyx3.prg                                         got pass     want pass    $00  21.4s
+[167/169] ok   CPU/shxy/shyx4.prg                                         got pass     want pass    $00  21.4s
+[168/169] ok   CPU/shxy/shyx5.prg                                         got pass     want pass    $00   8.3s
+[169/169] ok   CPU/jsrselfmod/jsr.prg                                     got pass     want pass    $00   8.3s
+
+153/169 as expected on the real C64
+  FAIL interrupts/irqdma/test6b.prg  got error want pass
+  FAIL CIA/ciavarious/cia1.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia2.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia3.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia3a.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia4.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia5.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia7.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia8.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia9.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia10.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia11.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia12.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia13.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia14.prg  got no-exit-write want pass
+  FAIL CIA/ciavarious/cia15.prg  got no-exit-write want pass

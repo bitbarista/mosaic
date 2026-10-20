@@ -1,0 +1,203 @@
+--- a/rtl/t65/T65.vhd
++++ b/rtl/t65/T65.vhd
+@@ -205,6 +205,15 @@
+   signal Set_Addr_To        : T_Set_Addr_To;
+   signal Write_Data         : T_Write_Data;
+   signal Jump               : std_logic_vector(1 downto 0);
++  -- LOCAL PATCH (see patches/ and ERRATA E-10): the taken-branch page-cross
++  -- fixup is deferred one cycle so that PC+2 is visible on the bus, as on
++  -- the die.  "00" none, "01" carry (PCH+1), "10" borrow (PCH-1).
++  signal PCHFix             : std_logic_vector(1 downto 0);
++  -- LOCAL PATCH (see patches/ and ERRATA E-11): JAM/KIL really stops the CPU.
++  signal Jam                : std_logic;
++  signal JamPhase           : unsigned(1 downto 0);
++  signal IsJam              : std_logic;
++  signal A_i                : std_logic_vector(23 downto 0);
+   signal BAAdd              : std_logic_vector(1 downto 0);
+   signal BreakAtNA          : std_logic;
+   signal ADAdd              : std_logic;
+@@ -229,6 +238,9 @@
+   signal Res_n_d        : std_logic;
+ 
+   signal really_rdy     : std_logic;
++  -- LOCAL PATCH (ERRATA E-41): RDY held ANE's operand cycle
++  signal ane_held       : std_logic;
++  signal ane_magic      : std_logic_vector(7 downto 0);
+   signal WRn_i          : std_logic;
+ 
+   signal NMI_entered    : std_logic;
+@@ -236,7 +248,13 @@
+ begin
+   -- gate Rdy with read/write to make an "OK, it's really OK to stop the processor 
+   really_rdy <= Rdy or not(WRn_i);
++  ane_magic <= x"ee" when ane_held = '1' else x"ef";
+   Sync <= '1' when MCycle = "000" else '0';
++  -- LOCAL PATCH (ERRATA E-11).  The twelve JAMs are $x2 for every high nibble
++  -- except 8, A, C and E -- $82/$C2/$E2 are undocumented NOP #imm and $A2 is
++  -- LDX #imm -- which is precisely "low nibble 2, and not (bit7 and not bit4)".
++  IsJam <= '1' when IR(3 downto 0) = "0010" and (IR(7) = '0' or IR(4) = '1')
++           else '0';
+   EF <= EF_i;
+   MF <= MF_i;
+   XF <= XF_i;
+@@ -326,6 +344,7 @@
+       Mode_r <= (others => '0');
+       ALU_Op_r <= ALU_OP_BIT;
+       Write_Data_r <= Write_Data_DL;
++      PCHFix <= "00";
+       Set_Addr_To_r <= Set_Addr_To_PBR;
+ 
+       WRn_i <= '1';
+@@ -374,7 +393,11 @@
+           if Inc_S = '1' then
+             S <= S + 1;
+           end if;
+-          if Dec_S = '1' and RstCycle = '0' then
++          -- LOCAL PATCH (ERRATA E-51): the NMOS die runs its reset through the
++          -- BRK sequence with the writes turned into reads, so S steps down by
++          -- three (perfect6502: reads at $01C0, $01BF, $01BE, then PHP pushes
++          -- at $01BD).  Upstream held S during reset.
++          if Dec_S = '1' then
+             S <= S - 1;
+           end if;
+ 
+@@ -390,15 +413,34 @@
+             when "10" =>
+               PC <= unsigned(DI & DL);
+             when "11" =>
++              -- LOCAL PATCH (ERRATA E-10).  Upstream fixes PCH in the SAME cycle
++              -- it adds the displacement, and drives the address bus from
++              -- PCAdder, so the branch target appears one cycle early and PC+2
++              -- is never read.  A real 6502 reads PC+2 on cycle 3, THEN adds.
++              -- So: update PCL here and remember the fixup for the next cycle.
++              PC(7 downto 0) <= PCAdder(7 downto 0);
+               if PCAdder(8) = '1' then
+                 if DL(7) = '0' then
++                  PCHFix <= "01";
++                else
++                  PCHFix <= "10";
++                end if;
++              else
++                PCHFix <= "00";
++              end if;
++            when others =>
++              -- ...and apply it here, on the cycle that shows the un-fixed
++              -- target on the bus.  Branch cycle 4 leaves Jump at "00", so this
++              -- arm is the one that runs, and PCHFix is only ever non-zero for
++              -- exactly that one cycle.
++              if PCHFix /= "00" then
++                if PCHFix = "01" then
+                   PC(15 downto 8) <= PC(15 downto 8) + 1;
+                 else
+                   PC(15 downto 8) <= PC(15 downto 8) - 1;
+                 end if;
++                PCHFix <= "00";
+               end if;
+-              PC(7 downto 0) <= PCAdder(7 downto 0);
+-            when others => null;
+           end case;
+         end if;
+       end if;
+@@ -465,8 +507,10 @@
+             tmpP(Flag_V) := '1';
+           end if;
+           if RstCycle = '1' then
+-            tmpP(Flag_I) := '0';
+-            tmpP(Flag_D) := '0';
++            -- LOCAL PATCH (ERRATA E-51): reset SETS I (perfect6502: the first
++            -- PHP after reset pushes I = 1) and leaves D alone -- clearing D
++            -- on reset is a CMOS 65C02 change, not NMOS.  Upstream cleared both.
++            tmpP(Flag_I) := '1';
+           end if;
+           tmpP(Flag_1) := '1';
+ 
+@@ -588,16 +632,34 @@
+       P                                     when Set_BusA_To_P,
+       ABC(7 downto 0) and DI                when Set_BusA_To_DA,
+       (ABC(7 downto 0) or x"ee") and DI     when Set_BusA_To_DAO,--ee for OAL instruction. constant may be different on other platforms.TODO:Move to generics
+-      (ABC(7 downto 0) or x"ee") and DI and X(7 downto 0)    when Set_BusA_To_DAX,--XAA, ee for OAL instruction. constant may be different on other platforms.TODO:Move to generics
++      -- LOCAL PATCH (ERRATA E-41): ANE/XAA's constant is $EF, and $EE when RDY
++      -- held its operand cycle.  $EE breaks real C64 code: Spectipede's and
++      -- Turrican 3's own ANE uses need bit 0 set.  VICE's testprogs CPU/ane
++      -- (checked on a real C64C) pins both values.
++      (ABC(7 downto 0) or ane_magic) and DI and X(7 downto 0)    when Set_BusA_To_DAX,
+       ABC(7 downto 0) and X(7 downto 0)     when Set_BusA_To_AAX,--SAX, SHA
+       (others => '-')                       when Set_BusA_To_DONTCARE;--Can probably remove this
+ 
+   with Set_Addr_To_r select
+-    A <=
++    A_i <=
+       "0000000000000001" & std_logic_vector(S(7 downto 0))                            when Set_Addr_To_SP,
+       DBR & "00000000" & AD                                                           when Set_Addr_To_ZPG,
+       "00000000" & BAH & BAL(7 downto 0)                                              when Set_Addr_To_BA,
+-      PBR & std_logic_vector(PC(15 downto 8)) & std_logic_vector(PCAdder(7 downto 0)) when Set_Addr_To_PBR;
++      -- LOCAL PATCH (ERRATA E-10): PC, not PCAdder.  For every non-branch
++      -- cycle PCAdd='0' and PCAdder is just PC(7 downto 0), so this changes
++      -- nothing else; on a branch it stops the target reaching the bus a
++      -- cycle early.
++      PBR & std_logic_vector(PC(15 downto 8)) & std_logic_vector(PC(7 downto 0)) when Set_Addr_To_PBR;
++
++  -- LOCAL PATCH (ERRATA E-11): the jammed bus.  Taken from the die, not from a
++  -- guess: perfect6502 settles as $FFFF, $FFFE, $FFFE, then $FFFF FOR EVER.
++  -- The two $FFFE cycles in the middle are a three-cycle transient, and a
++  -- plausible-looking "$FFFE for ever" is wrong from the fourth cycle on.
++  -- The bank byte is left alone so this stays a 6502-mode behaviour only.
++  A <= A_i(23 downto 16) & x"FFFE"
++         when (Jam = '1' and (JamPhase = "01" or JamPhase = "10")) else
++       A_i(23 downto 16) & x"FFFF" when Jam = '1' else
++       A_i;
+ 
+   -- This is the P that gets pushed on stack with correct B flag. I'm not sure if NMI also clears B, but I guess it does.
+   PwithB<=(P and x"ef") when (IRQCycle='1' or NMICycle='1') else P;
+@@ -633,9 +695,27 @@
+       IRQCycle <= '0';
+       NMICycle <= '0';
+       NMIAct <= '0';
++      Jam <= '0';
++      JamPhase <= "00";
++      ane_held <= '0';
+     elsif Clk'event and Clk = '1' then
+       if (Enable = '1') then
+         if (really_rdy = '1') then
++         ane_held <= '0';
++         if Jam = '1' then
++          -- LOCAL PATCH (ERRATA E-11): a jammed 6502 is STOPPED, not slowed.
++          -- MCycle does not advance, so no further opcode is ever fetched, and
++          -- interrupts are not started: on the die only RESET ends this state,
++          -- and a JAM that could still be interrupted would be a NOP with extra
++          -- steps.  JamPhase walks the address bus through the die's own
++          -- settling sequence.
++          if JamPhase /= "11" then
++            JamPhase <= JamPhase + 1;
++          end if;
++         else
++          if MCycle = "001" and IsJam = '1' then
++            Jam <= '1';
++          end if;
+           if MCycle = LCycle or Break = '1' then
+             MCycle <= "000";
+             RstCycle <= '0';
+@@ -650,6 +730,10 @@
+           else
+             MCycle <= std_logic_vector(unsigned(MCycle) + 1);
+           end if;
++         end if;
++        elsif MCycle = LCycle and IR = x"8B" then
++          -- LOCAL PATCH (ERRATA E-41): RDY is holding ANE's operand cycle
++          ane_held <= '1';
+         end if;
+         --detect NMI even if not rdy    
+         if NMI_n_o = '1' and (NMI_n = '0' and (IR(4 downto 0)/="10000" or Jump/="01")) then -- branches have influence on NMI start (not best way yet, though - but works...)
+--- a/rtl/t65/T65_ALU.vhd
++++ b/rtl/t65/T65_ALU.vhd
+@@ -188,6 +188,10 @@
+     -- ASL, ROL, LSR, ROR, BIT, LD, DEC, INC
+     P_Out <= P_In;
+     Q_t := BusA;
++    -- LOCAL PATCH (synthesis only, no behaviour change): Q2_t is assigned
++    -- only for ARR and read only for ARR, but GHDL's synthesis infers a latch
++    -- for it without a default.
++    Q2_t := BusA;
+     case Op is
+       when ALU_OP_OR=>
+         Q_t := BusA or BusB;

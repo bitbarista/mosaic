@@ -1,0 +1,11 @@
+# Owner's update route, disk image, on build $2ECB -- board #3, 2026-10-20 (Carl at the C64)
+# Image: mosaic-release updater/out/MOSAIC.D64, md5 b80f179fb34f603edc35d24d3d2eab64,
+#        built by updater/mkfirmware.py from syn/build/mosaic.bin md5 6a16527c ($2ECB)
+# Route: D64 copied to the Ultimate II+ USB stick (MOSaic/MOSAIC.D64), mounted as drive 8
+#        from the Ultimate menu, J4 fitted, LOAD"UPDATE",8,1 / RUN typed on the C64.
+# Before: slot A, slot B and header already $2ECB (full update 2026-10-15).
+UPDATE: screen showed UPDATE COMPLETE (Carl)
+17:5x warm, J4 fitted:      IDENT RESULT $00  build $2ECB
+17:55 after power cycle:    IDENT RESULT $00  build $2ECB
+Result: PASS. The disk route that stalled at OPEN on 2026-10-06 (update_board3.log, older
+core) completes on $2ECB. Every update before this one was host-fed (-DHOST).

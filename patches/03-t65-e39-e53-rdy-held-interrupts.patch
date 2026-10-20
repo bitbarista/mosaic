@@ -1,0 +1,164 @@
+--- a/rtl/t65/T65.vhd
++++ b/rtl/t65/T65.vhd
+@@ -243,6 +243,16 @@
+   signal really_rdy     : std_logic;
+   -- LOCAL PATCH (ERRATA E-41): RDY held ANE's operand cycle
+   signal ane_held       : std_logic;
++  -- LOCAL PATCH (ERRATA E-39): T0 held by RDY, the polls made while it was
++  -- held, and the I flag the die polls with
++  signal t0_held        : std_logic;
++  signal irq_req        : std_logic;
++  signal nmi_req        : std_logic;
++  signal I_eff          : std_logic;
++  signal irq_raw_o      : std_logic;  -- /IRQ latched every Enable, branch or not
++  -- LOCAL PATCH (ERRATA E-39): a branch's IRQ poll, made at its operand cycle
++  signal br_irq         : std_logic;
++  signal br_first       : std_logic;
+   signal ane_magic      : std_logic_vector(7 downto 0);
+   signal WRn_i          : std_logic;
+ 
+@@ -252,6 +262,8 @@
+   -- gate Rdy with read/write to make an "OK, it's really OK to stop the processor 
+   really_rdy <= Rdy or not(WRn_i);
+   ane_magic <= x"ee" when ane_held = '1' else x"ef";
++  -- CLI/SEI have written I by the first held repeat of their T0 (ERRATA E-39)
++  I_eff <= '0' when IR = x"58" else '1' when IR = x"78" else P(Flag_I);
+   Sync <= '1' when MCycle = "000" else '0';
+   -- LOCAL PATCH (ERRATA E-11).  The twelve JAMs are $x2 for every high nibble
+   -- except 8, A, C and E -- $82/$C2/$E2 are undocumented NOP #imm and $A2 is
+@@ -520,10 +532,13 @@
+           P<=tmpP;--new way
+ 
+           SO_n_o <= SO_n;
+-          if IR(4 downto 0)/="10000" or Jump/="01" then -- delay interrupts during branches (checked with Lorenz test and real 6510), not best way yet, though - but works...
+-            IRQ_n_o <= IRQ_n;
+-          end if;
+         end if;
++        -- LOCAL PATCH (ERRATA E-39): the die latches /IRQ (IRQP) every cycle,
++        -- RDY or not, as upstream already did for /NMI below.
++        if IR(4 downto 0)/="10000" or Jump/="01" then -- delay interrupts during branches (checked with Lorenz test and real 6510), not best way yet, though - but works...
++          IRQ_n_o <= IRQ_n;
++        end if;
++        irq_raw_o <= IRQ_n;
+         -- detect nmi even if not rdy
+         if IR(4 downto 0)/="10000" or Jump/="01" then -- delay interrupts during branches (checked with Lorenz test and real 6510) not best way yet, though - but works...
+           NMI_n_o <= NMI_n;
+@@ -551,8 +566,12 @@
+       SHCross <= '0';
+     elsif Clk'event and Clk = '1' then
+       if (Enable = '1') then
+-        NMI_entered <= '0';
+         if (really_rdy = '1') then
++          -- LOCAL PATCH (ERRATA E-53): cleared on a step, not on every Enable.
++          -- Upstream cleared it on every Enable, so a hold of the NMI vector's
++          -- low-byte read forgot the hijack, and the high byte came from $FFFF
++          -- (perfect6502: $FFFB).
++          NMI_entered <= '0';
+           if MCycle = "000" then
+             SHCross <= '0';
+           end if;
+@@ -714,6 +733,11 @@
+       Jam <= '0';
+       JamPhase <= "00";
+       ane_held <= '0';
++      t0_held <= '0';
++      irq_req <= '0';
++      nmi_req <= '0';
++      br_irq <= '0';
++      br_first <= '1';
+     elsif Clk'event and Clk = '1' then
+       if (Enable = '1') then
+         if (really_rdy = '1') then
+@@ -737,7 +761,30 @@
+             RstCycle <= '0';
+             IRQCycle <= '0';
+             NMICycle <= '0';
+-            if NMIAct = '1' and IR/=x"00" then -- delay NMI further if we just executed a BRK
++            if IR(4 downto 0) = "10000" and (MCycle = "001" or MCycle = "010") then
++              -- LOCAL PATCH (ERRATA E-39): a branch that ends without crossing
++              -- a page takes what its operand-cycle polls found (below); an
++              -- untaken one ends ON the operand cycle, so this step's poll
++              -- counts too.  NMI as upstream.
++              if NMIAct = '1' and IR/=x"00" then
++                NMICycle <= '1';
++                NMIAct <= '0';
++              elsif (MCycle = "010" and br_irq = '1') or
++                    (MCycle = "001" and ((br_first = '0' and br_irq = '1') or
++                                         (irq_raw_o = '0' and P(Flag_I) = '0'))) then
++                IRQCycle <= '1';
++              end if;
++            elsif t0_held = '1' then
++              -- LOCAL PATCH (ERRATA E-39): the last repeat of a T0 that RDY
++              -- held.  It polls as the held repeats did (below), and what they
++              -- found still stands.
++              if nmi_req = '1' or NMIAct = '1' then
++                NMICycle <= '1';
++                NMIAct <= '0';
++              elsif irq_req = '1' or (IRQ_n_o = '0' and I_eff = '0') then
++                IRQCycle <= '1';
++              end if;
++            elsif NMIAct = '1' and IR/=x"00" then -- delay NMI further if we just executed a BRK
+               NMICycle <= '1';
+               NMIAct <= '0'; -- reset NMI edge detector if we start processing the NMI
+             elsif IRQ_n_o = '0' and P(Flag_I) = '0' then
+@@ -747,9 +794,58 @@
+             MCycle <= std_logic_vector(unsigned(MCycle) + 1);
+           end if;
+          end if;
+-        elsif MCycle = LCycle and IR = x"8B" then
++         if MCycle = LCycle or Break = '1' then
++           t0_held <= '0';
++           br_first <= '1';
++         end if;
++        elsif Jam = '0' and (MCycle = LCycle or Break = '1') and IR(4 downto 0) /= "10000" then
++          -- LOCAL PATCH (ERRATA E-39): THE DIE KEEPS POLLING WHILE RDY HOLDS T0.
++          -- perfect6502 computes INTG = NMIG | (IRQP & !I) in phi2 of T0 -- an
++          -- instruction's last cycle -- and RDY holding that cycle REPEATS it,
++          -- so the poll is made again on every held repeat, with /IRQ as
++          -- latched a cycle earlier and with I as it then stands: CLI and SEI
++          -- write I in phi1 of the cycle AFTER their T0, which during a stall
++          -- is the first held repeat.
++          -- ⚠ THE POLL IS SET-ONLY ACROSS THE REPEATS.  The die clears INTG only
++          -- when the vector is fetched, so a repeat that sees I = 1 (SEI) does
++          -- not undo an earlier one that saw I = 0.  The first held repeat is
++          -- the poll an unstalled T0 makes; every later one, and the step that
++          -- finally completes (above), ORs in a poll with I as CLI/SEI wrote it.
++          -- Branches poll at their operand cycle instead (the branch poll,
++          -- below).
++          if t0_held = '0' then
++            if NMIAct = '1' and IR /= x"00" then nmi_req <= '1'; else nmi_req <= '0'; end if;
++            if IRQ_n_o = '0' and P(Flag_I) = '0' then irq_req <= '1'; else irq_req <= '0'; end if;
++          else
++            if NMIAct = '1' then nmi_req <= '1'; end if;
++            if IRQ_n_o = '0' and I_eff = '0' then irq_req <= '1'; end if;
++          end if;
++          t0_held <= '1';
+           -- LOCAL PATCH (ERRATA E-41): RDY is holding ANE's operand cycle
+-          ane_held <= '1';
++          if IR = x"8B" then
++            ane_held <= '1';
++          end if;
++        end if;
++        -- LOCAL PATCH (ERRATA E-39): THE BRANCH POLL.  A branch decides on an
++        -- IRQ at its OPERAND cycle (MCycle 1) -- which is why a taken branch
++        -- delays an IRQ that arrives later -- and RDY holding that cycle repeats
++        -- it, with a poll on every instance, each with /IRQ as latched in the
++        -- cycle before (perfect6502: the window grows by exactly the hold).
++        -- Holding a taken branch's third cycle changes nothing (perfect6502).
++        -- Unstalled this is upstream's poll exactly: irq_raw_o at the end of
++        -- the operand cycle is the sample from the end of the opcode fetch.
++        if Jam = '0' and IR(4 downto 0) = "10000" and MCycle = "001" then
++          if br_first = '1' then
++            br_irq <= not irq_raw_o and not P(Flag_I);
++          else
++            br_irq <= br_irq or (not irq_raw_o and not P(Flag_I));
++          end if;
++          -- an untaken branch ends here: the next instruction starts afresh
++          if really_rdy = '1' and (MCycle = LCycle or Break = '1') then
++            br_first <= '1';
++          else
++            br_first <= '0';
++          end if;
+         end if;
+         --detect NMI even if not rdy    
+         if NMI_n_o = '1' and (NMI_n = '0' and (IR(4 downto 0)/="10000" or Jump/="01")) then -- branches have influence on NMI start (not best way yet, though - but works...)
