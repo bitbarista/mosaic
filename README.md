@@ -11,9 +11,10 @@
 
 </div>
 
-MOSaic is a small board that plugs into the Commodore 64's 6510 CPU socket and replaces the
-CPU with a Lattice iCE40UP5K FPGA. The goal is a cycle-exact 6510, verified against the
-real chip rather than against other emulations.
+MOSaic is a drop-in replacement for the Commodore 64's 6510 CPU. It plugs into the 6510
+socket and behaves like the original chip, cycle for cycle, undocumented opcodes and quirks
+included. Inside is a Lattice iCE40UP5K FPGA, checked against a transistor-level simulation
+of the real chip and against VICE's test suite on a real C64.
 
 > **Free for non-commercial use.** MOSaic is a hobby project, given to the community.
 > If it's useful to you, please consider [supporting it on Ko-fi](https://ko-fi.com/bitbarista).
