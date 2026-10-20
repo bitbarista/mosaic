@@ -42,7 +42,8 @@ reset, the power-up order is the first thing to check.
 
 - One C64 so far: a PAL breadbin, board 250407. The C64C, with its 8500 CPU, has not been
   checked.
-- `interrupts/irqdma/test6b` from the VICE testprogs gave one mismatch in 96 runs. It could
-  not be reproduced, and the VICE testbench developers have said the test itself may be
-  unstable. The run logs are in `test-results/hardware/`.
+- `interrupts/irqdma/test6b` from the VICE testprogs gave one mismatch in 96 runs and could
+  not be reproduced. The VICE testbench developers haven't seen this test misbehave before,
+  though other tests in the testbench have needed fixing over the years. The run logs are in
+  `test-results/hardware/`.
 - MOSaic does not fit a 1541 or a C128, which use different CPUs.

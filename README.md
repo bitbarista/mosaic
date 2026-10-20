@@ -48,9 +48,9 @@ In simulation:
 **Known limits.** These are listed openly; the details are in
 [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md).
 
-- `interrupts/irqdma/test6b` gave one mismatch in 96 runs. It could not be reproduced, and
-  the VICE testbench developers have said the test itself may be unstable. Run logs are in
-  `test-results/hardware/`.
+- `interrupts/irqdma/test6b` gave one mismatch in 96 runs and could not be reproduced. The
+  VICE testbench developers haven't seen this test misbehave before, though other tests in
+  the testbench have needed fixing over the years. Run logs are in `test-results/hardware/`.
 - The electrical checks against the 6510's AC and DC datasheet tables flag a few deviations,
   none seen to cause a fault. See `docs/KNOWN-ISSUES.md`.
 - Tested in one C64 so far. The C64C (8500) has not been checked. It does **not** fit a 1541
