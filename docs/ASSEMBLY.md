@@ -36,8 +36,7 @@ the socket. **Don't use the C64's own socket as a soldering fixture.** Use the j
 
 - **Print** `hardware/jig/pin_jig.stl`. It has 40 guide holes, 1.20 mm across and 4 mm deep,
   on feet so the pin tips can poke through underneath. The source is
-  `hardware/jig/pin_jig.scad`, and `gen/check_jig.py` checks its hole positions against the
-  PCB file.
+  `hardware/jig/pin_jig.scad`. Its hole positions were checked against the PCB file.
 - **Check the fit before you solder.** Holes from different printers come out at different
   sizes. A pin should drop in without force and stand upright. If yours are too tight or too
   loose, change `hole_d` in the `.scad` and print it again.

@@ -31,8 +31,8 @@ of the real chip and against VICE's test suite on a real C64.
 On a real C64 with the current build (`$2ECB`):
 
 - **VICE testprogs** (interrupts, CIA, VIC-II, CPU): all 169 pass, including the undocumented
-  opcodes and the SHA/SHX/SHY/TAS behaviour during badlines.
-  The 15 `ciavarious` CIA tests report on screen only, so they were checked by eye
+  opcodes and the SHA/SHX/SHY/TAS behaviour during badlines (one unrepeated mismatch is noted
+  under Known limits). The 16 `ciavarious` CIA tests report on screen only, so they were checked by eye
   (`test-results/hardware/ciavarious_2ecb_20261019.log`). The full comparison is in
   `test-results/hardware/hw_2ecb_vs_e4e7_3e5d_20261014.txt`.
 - **Demos:** a four-disk demo (NLP) runs all the way through, using a stock KERNAL and JiffyDOS.
@@ -105,8 +105,8 @@ After that, every update runs on the C64 itself, from `updater/out/MOSAIC.D64`.
 | `test-results/README.md` | The raw test records: hardware runs and the simulation gate |
 | `NOTICE` | Third-party code and its licences |
 
-Comments in the source cite entries such as E-39, D-16 or S-19, and test scripts under `sim/`.
-These are in the project's development tree, which is not published. The fixes they describe
+Comments in the source cite entries such as E-39, D-16 or S-19, and check scripts under `sim/`
+and `gen/`. These are in the project's development tree, which is not published. The fixes they describe
 are summarised in `NOTICE` and `patches/`, and the test results are in `test-results/`.
 
 ## Support the project

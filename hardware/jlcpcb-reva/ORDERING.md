@@ -14,12 +14,12 @@ are JLCPCB's defaults.
 
 ## The board, as JLCPCB will measure it
 
-Measured from `hardware/mosaic-reva.kicad_pcb` by `gen/check_order_facts.py`:
+Measured from `hardware/mosaic-reva.kicad_pcb`:
 
 | | |
 |---|---|
 | Size | 20.32 × 51.40 mm |
-| layers | 4 |
+| Layers | 4 |
 | Vias | **235**, all the same: 235 at 0.40 mm pad / 0.30 mm hole |
 | Narrowest track | 0.10 mm |
 | Component holes | 40 at 0.90 mm (the plug pins), 9 at 0.65 mm (J3's 7 programming pads and J4's 2) |

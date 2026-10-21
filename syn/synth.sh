@@ -13,6 +13,10 @@
 #
 # ⚠ THE ANALYSIS ORDER MATTERS.  T65_Pack defines the types the others use.
 set -e
+# ⚠ C LOCALE.  The build ID hashes rtl/t65/*.vhd in glob order, and en_GB/en_US
+# sort T65.vhd last where C sorts it first: same sources, different ID, and a
+# different bitstream.  $2ECB was built under C.
+export LC_ALL=C
 cd "$(dirname "$0")/.."
 YOSYS=${YOSYS:-$HOME/oss-cad-suite/bin/yosys}
 OUT=${1:-syn/build/mosaic.json}
