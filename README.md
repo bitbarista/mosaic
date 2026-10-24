@@ -126,6 +126,14 @@ modify it, share your changes. **Selling boards, kits or pre-programmed parts ne
 commercial licence** — get in touch through [Ko-fi](https://ko-fi.com/bitbarista) or open a
 GitHub issue titled "Commercial licence", and we can agree terms.
 
+## Disclaimer
+
+MOSaic is a hobby project, provided as is, without warranty of any kind. Building,
+programming and fitting it is at your own risk. The author accepts no responsibility for
+damage to your C64, its socket, the original 6510, other hardware or data, or for any
+other loss. Check your work before powering up, and read [docs/ASSEMBLY.md](docs/ASSEMBLY.md) before fitting
+the plug pins. The full terms are in the licences below.
+
 ## Licence
 
 © 2026 Carl Leach. Free for non-commercial use, under two licences:
