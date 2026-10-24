@@ -26,7 +26,6 @@ every update is done from the C64 itself, with MOSaic in the CPU socket.
 - **A 7-way, 1.27 mm pitch pogo probe.** J3 on the board is seven bare 1.27 mm plated holes,
   with no header fitted. The holes locate the pogo tips, so the probe is held by hand.
   A 2.54 mm probe will not fit.
-  <!-- RELEASE TODO (Carl): where to buy the probe (link or part name) -->
 - **A Linux PC** with `lsusb` (package `usbutils`) and, optionally, `spd-say`
   (`speech-dispatcher`).
 - **`iceprog`**, from [OSS CAD Suite](https://github.com/YosysHQ/oss-cad-suite-build) or

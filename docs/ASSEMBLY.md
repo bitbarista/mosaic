@@ -11,8 +11,6 @@ file, by design.
 | — | **1.27 mm** jumper (shunt) for J4 | 1 | Fitted only while updating |
 | — | 3D-printed pin jig, `hardware/jig/pin_jig.stl` | 1 | Reusable, one is enough for any number of boards |
 
-<!-- RELEASE TODO (Carl): supplier links for the turned-pin strips, the 1.27 mm header and jumper -->
-
 The plug pins go in the two long rows of holes (J1 and J2). J4 is the 2-way header at the
 bottom right, beside the J3 programming pads:
 
